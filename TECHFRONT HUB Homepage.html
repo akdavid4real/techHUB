@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1280"/>
+<title>TECHFRONT HUB — Future-ready digital skills</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="icons.jsx"></script>
+<script type="text/babel" src="data.jsx"></script>
+<script type="text/babel" src="header_hero.jsx"></script>
+<script type="text/babel" src="sections_mid.jsx"></script>
+<script type="text/babel" src="sections_bottom.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "blue",
+  "density": "comfortable"
+}/*EDITMODE-END*/;
+
+function applyTweaks(t) {
+  const accents = {
+    blue:   { "--brand-50":"#eff6ff","--brand-100":"#dbeafe","--brand-200":"#bfdbfe","--brand-500":"#2563eb","--brand-600":"#1d4ed8","--brand-700":"#1e40af","--brand-900":"#0b1e4a" },
+    indigo: { "--brand-50":"#eef2ff","--brand-100":"#e0e7ff","--brand-200":"#c7d2fe","--brand-500":"#6366f1","--brand-600":"#4f46e5","--brand-700":"#4338ca","--brand-900":"#1e1b4b" },
+    teal:   { "--brand-50":"#f0fdfa","--brand-100":"#ccfbf1","--brand-200":"#99f6e4","--brand-500":"#14b8a6","--brand-600":"#0d9488","--brand-700":"#0f766e","--brand-900":"#042f2e" },
+    slate:  { "--brand-50":"#f8fafc","--brand-100":"#e2e8f0","--brand-200":"#cbd5e1","--brand-500":"#64748b","--brand-600":"#334155","--brand-700":"#1e293b","--brand-900":"#020617" },
+  };
+  const pal = accents[t.accent] || accents.blue;
+  Object.entries(pal).forEach(([k, v]) => document.documentElement.style.setProperty(k, v));
+}
+
+function App() {
+  const [tweaks, setTweaks] = React.useState(TWEAK_DEFAULTS);
+  const [editMode, setEditMode] = React.useState(false);
+
+  React.useEffect(() => { applyTweaks(tweaks); }, [tweaks]);
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const d = e.data || {};
+      if (d.type === "__activate_edit_mode") setEditMode(true);
+      if (d.type === "__deactivate_edit_mode") setEditMode(false);
+    };
+    window.addEventListener("message", onMsg);
+    window.parent.postMessage({ type: "__edit_mode_available" }, "*");
+    return () => window.removeEventListener("message", onMsg);
+  }, []);
+
+  const update = (k, v) => {
+    const next = { ...tweaks, [k]: v };
+    setTweaks(next);
+    window.parent.postMessage({ type: "__edit_mode_set_keys", edits: { [k]: v } }, "*");
+  };
+
+  return (
+    <>
+      <TopBar/>
+      <Header onLogin={() => alert("Login modal placeholder")}/>
+      <Hero/>
+      <Trusted/>
+      <CourseSlider/>
+      <Catalog/>
+      <UdemyGrid/>
+      <WhyUs/>
+      <Categories/>
+      <Packages/>
+      <Testimonials/>
+      <FinalCTA/>
+      <Footer/>
+
+      <div className={"tweaks" + (editMode ? " on" : "")}>
+        <h5>Tweaks</h5>
+        <div className="row">
+          <span>Accent</span>
+          <div className="swatches">
+            {[
+              {k: "blue",   c: "#2563eb"},
+              {k: "indigo", c: "#4f46e5"},
+              {k: "teal",   c: "#0d9488"},
+              {k: "slate",  c: "#334155"},
+            ].map(s => (
+              <div key={s.k}
+                   className={"sw" + (tweaks.accent === s.k ? " active" : "")}
+                   style={{background: s.c}}
+                   onClick={() => update("accent", s.k)} />
+            ))}
+          </div>
+        </div>
+        <div style={{fontSize: 11, color: "var(--ink-400)"}}>More controls coming — toggle via toolbar.</div>
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
