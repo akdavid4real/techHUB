@@ -21,6 +21,8 @@ function TopBar() {
 }
 
 function Header({ onLogin }) {
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
   return (
     <header className="header">
       <div className="container">
@@ -28,19 +30,25 @@ function Header({ onLogin }) {
           <span className="brand-mark">TF</span>
           <span className="brand-name">TECHFRONT<span className="dot">.</span>HUB</span>
         </a>
-        <nav className="nav">
-          <a href="#">Home</a>
+        <nav className={`nav ${isMenuOpen ? 'mobile-open' : ''}`}>
+          <a href="#" onClick={() => setIsMenuOpen(false)}>Home</a>
           <a href="#" className="has-caret">Courses</a>
-          <a href="#">Learning</a>
+          <a href="#" onClick={() => setIsMenuOpen(false)}>Learning</a>
           <a href="#" className="has-caret">Programs</a>
-          <a href="#">Corporate</a>
-          <a href="#">Resources</a>
-          <a href="#">Pricing</a>
-          <a href="#">Blog</a>
+          <a href="#" onClick={() => setIsMenuOpen(false)}>Corporate</a>
+          <a href="#" onClick={() => setIsMenuOpen(false)}>Resources</a>
+          <a href="#" onClick={() => setIsMenuOpen(false)}>Pricing</a>
+          <a href="#" onClick={() => setIsMenuOpen(false)}>Blog</a>
+          <div className="mobile-only-cta">
+             <button className="btn btn-ghost btn-sm" onClick={() => { onLogin(); setIsMenuOpen(false); }}>Login</button>
+          </div>
         </nav>
         <div className="header-cta">
-          <button className="btn btn-ghost btn-sm" onClick={onLogin}>Login</button>
+          <button className="btn btn-ghost btn-sm hide-mobile" onClick={onLogin}>Login</button>
           <a href="#enroll" className="btn btn-primary btn-sm">Enroll Now <I.Arrow size={14} /></a>
+          <button className="menu-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle Menu">
+            {isMenuOpen ? <I.X size={24}/> : <I.Menu size={24}/>}
+          </button>
         </div>
       </div>
     </header>
